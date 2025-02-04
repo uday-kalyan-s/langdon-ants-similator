@@ -21,14 +21,15 @@ class Direction(Enum):
 
 directions = [(-1,0), (0,1), (1,0), (0,-1)]
 def get_clock(direc):
-    return directions[(directions.index(direc)+1)%3]
+    return directions[(directions.index(direc)+1)%4]
 
 def get_anticlock(direc):
-    return directions[(directions.index(direc)-1)%3]
+    return directions[(directions.index(direc)-1)%4]
 
 class Cell:
     def __init__(self) -> None:
-        self.color = random.choice(["black","white"])
+        #self.color = random.choice(["black","white"])
+        self.color = "white"
         self.pheromone_id = None
         self.pheromone_life = 0
     
@@ -66,6 +67,8 @@ class Cell:
 class Grid:
     def __init__(self, width, height) -> None:
         self.cells = [[Cell() for _ in range(width)] for _ in range(height)]
+        self.width = width
+        self.height = height
 
     def deprecate_pheromones(self):
         for row in self.cells:
@@ -83,8 +86,12 @@ class Ant:
     def make_move(self):
         cur_cell = self.grid.cells[self.row][self.col]
         move_dir = cur_cell.get_descision(self.id, self.direction)
-        self.row += move_dir[0]
+        self.direction = move_dir
+        self.row += move_dir[0] # :P space wrapping plane
         self.col += move_dir[1]
+        
+        self.row = self.row%self.grid.height
+        self.col = self.col%self.grid.width
 
         cur_cell.flip()
         cur_cell.add_pheromone(self.id)
