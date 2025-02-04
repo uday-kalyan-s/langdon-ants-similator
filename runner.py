@@ -13,6 +13,7 @@ clock = pygame.time.Clock()
 running = True
 
 grid = Grid(width, height)
+grid.populate()
 
 ants = [Ant(id, width, height, grid) for id in range(ant_count)]
 

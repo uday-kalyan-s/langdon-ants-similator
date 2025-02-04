@@ -1,5 +1,6 @@
 from enum import Enum
 import random
+import numpy as np
 
 class Direction(Enum):
     North = 0
@@ -27,11 +28,12 @@ def get_anticlock(direc):
     return directions[(directions.index(direc)-1)%4]
 
 class Cell:
-    def __init__(self) -> None:
+    def __init__(self, grid) -> None:
         #self.color = random.choice(["black","white"])
         self.color = "white"
         self.pheromone_id = None
         self.pheromone_life = 0
+        self.grid = grid
     
     def get_descision(self, ant_id, direction):
         if ant_id == self.pheromone_id:
@@ -56,6 +58,7 @@ class Cell:
     def add_pheromone(self, ant_id):
         self.pheromone_id = ant_id
         self.pheromone_life = 5
+        
 
     def reduce_pheromone_life(self):
         if self.pheromone_id is not None:
@@ -66,14 +69,18 @@ class Cell:
 
 class Grid:
     def __init__(self, width, height) -> None:
-        self.cells = [[Cell() for _ in range(width)] for _ in range(height)]
         self.width = width
         self.height = height
+        self.pheromonal = []
 
+    def populate(self):
+        self.cells = [[Cell(self) for _ in range(self.width)] for _ in range(self.height)]
+    
     def deprecate_pheromones(self):
-        for row in self.cells:
-            for cell in row:
-                cell.reduce_pheromone_life()
+        self.pheromonal = set()
+        for cell in self.pheromonal:
+            if not cell.deprecate_pheromones:
+                self.pheromonal.add(cell)
 
 class Ant:
     def __init__(self, id, width, height, grid) -> None:
